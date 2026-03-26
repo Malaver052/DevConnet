@@ -23,8 +23,38 @@
         Comparte proyectos, resuelve dudas técnicas y conecta con otros devs de
         tu área
       </p>
-      <button class="btn-primary btn-large">Únete gratis</button>
+      <button class="btn-primary btn-large" id="btn-registro">
+        Únete gratis
+      </button>
     </section>
+
+    <!-- MODAL — va FUERA del hero, después de cerrar </section> -->
+    <div class="modal" id="modal-registro">
+      <div class="modal-content">
+        <button class="modal-cerrar" id="btn-cerrar">✕</button>
+        <h3>Crear cuenta</h3>
+        <p>Únete a la comunidad de desarrolladores</p>
+        <div class="form-group">
+          <input
+            type="text"
+            id="input-nombre"
+            placeholder="Tu nombre"
+            class="input"
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="email"
+            id="input-email"
+            placeholder="tu@email.com"
+            class="input"
+          />
+        </div>
+        <button class="btn-primary btn-large" id="btn-confirmar">
+          Crear cuenta
+        </button>
+      </div>
+    </div>
 
     <!-- FEATURES -->
     <section class="features">
@@ -52,10 +82,20 @@
       </div>
     </section>
 
+    <!-- DEVS DESTACADOS -->
+    <section class="devs-section">
+      <h2>Desarrolladores destacados</h2>
+      <p class="features-subtitle">Conoce a algunos miembros de la comunidad</p>
+      <div class="devs-grid" id="devs-grid">
+        <div class="loading">Cargando desarrolladores...</div>
+      </div>
+    </section>
+
     <!-- FOOTER -->
     <footer class="footer">
       <span class="logo">DevConnect</span>
       <span>Hecho con amor para devs © 2026</span>
     </footer>
+    <script src="app.js"></script>
   </body>
 </html>
