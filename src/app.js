@@ -6,24 +6,24 @@ const modalRegistro = document.querySelector('#modal-registro')
 const inputNombre = document.querySelector('#input-nombre')
 const inputEmail = document.querySelector('#input-email')
 
-// --- Funcionalidad 1: Abrir modal ---
+// --- Modal: Abrir ---
 btnRegistro.addEventListener('click', () => {
   modalRegistro.classList.add('activo')
 })
 
-// --- Funcionalidad 2: Cerrar modal ---
+// --- Modal: Cerrar con botón ---
 btnCerrar.addEventListener('click', () => {
   modalRegistro.classList.remove('activo')
 })
 
-// Cerrar si hace clic fuera del modal
+// --- Modal: Cerrar al hacer clic afuera ---
 modalRegistro.addEventListener('click', (evento) => {
   if (evento.target === modalRegistro) {
     modalRegistro.classList.remove('activo')
   }
 })
 
-// --- Funcionalidad 3: Validar formulario ---
+// --- Validar formulario ---
 const validarFormulario = () => {
   const nombre = inputNombre.value.trim()
   const email = inputEmail.value.trim()
@@ -41,24 +41,18 @@ const validarFormulario = () => {
   return true
 }
 
-// --- Funcionalidad 4: Confirmar registro ---
+// --- Confirmar registro ---
 btnConfirmar.addEventListener('click', () => {
   if (!validarFormulario()) return
 
   const nombre = inputNombre.value.trim()
-
-  // Cerrar modal
   modalRegistro.classList.remove('activo')
-
-  // Mostrar bienvenida
-  alert(`¡Bienvenido a DevConnect, ${nombre}! `)
-
-  // Limpiar inputs
+  alert(`¡Bienvenido a DevConnect, ${nombre}! 🚀`)
   inputNombre.value = ''
   inputEmail.value = ''
 })
 
-// --- Funcionalidad 5: Navbar al hacer scroll ---
+// --- Navbar al hacer scroll ---
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar')
   if (window.scrollY > 50) {
@@ -68,18 +62,16 @@ window.addEventListener('scroll', () => {
   }
 })
 
-// Lista de devs famosos para mostrar
+// ============================================
+// FETCH — GitHub API con ES6+
+// ============================================
+
 const devsDestacados = ['torvalds', 'gvanrossum', 'addyosmani', 'tj']
 
-// Función para obtener un perfil de GitHub
 const obtenerPerfilGitHub = async (username) => {
   try {
     const respuesta = await fetch(`https://api.github.com/users/${username}`)
-
-    if (!respuesta.ok) {
-      throw new Error(`No se pudo obtener el perfil de ${username}`)
-    }
-
+    if (!respuesta.ok) throw new Error(`Error con ${username}`)
     const perfil = await respuesta.json()
     return perfil
   } catch (error) {
@@ -88,33 +80,38 @@ const obtenerPerfilGitHub = async (username) => {
   }
 }
 
-// Función para crear la tarjeta HTML de un dev
 const crearTarjetaDev = (perfil) => {
+  const { avatar_url, html_url, name, login, public_repos, bio } = perfil
+
   return `
-    <div class="dev-card" onclick="window.open('${perfil.html_url}', '_blank')">
-      <img src="${perfil.avatar_url}" alt="${perfil.login}" />
-      <h4>${perfil.name || perfil.login}</h4>
-      <p>${perfil.public_repos} repositorios</p>
+    <div class="dev-card" onclick="window.open('${html_url}', '_blank')">
+      <img src="${avatar_url}" alt="${login}" />
+      <h4>${name ?? login}</h4>
+      <p>${public_repos} repositorios</p>
+      ${bio ? `<p style="margin-top:4px;font-size:0.75rem">${bio.slice(0, 50)}...</p>` : ''}
     </div>
   `
 }
 
-// Función principal — carga todos los devs
 const cargarDevs = async () => {
   const grid = document.querySelector('#devs-grid')
 
-  // Pedir todos los perfiles al mismo tiempo (en paralelo)
-  const perfiles = await Promise.all(
-    devsDestacados.map((username) => obtenerPerfilGitHub(username))
-  )
+  try {
+    const perfiles = await Promise.all(
+      devsDestacados.map((username) => obtenerPerfilGitHub(username))
+    )
 
-  // Filtrar los que fallaron y construir el HTML
-  const tarjetas = perfiles
-    .filter((perfil) => perfil !== null)
-    .map((perfil) => crearTarjetaDev(perfil))
-    .join('')
+    const tarjetas = perfiles
+      .filter((perfil) => perfil !== null)
+      .map((perfil) => crearTarjetaDev(perfil))
+      .join('')
 
-  grid.innerHTML = tarjetas
+    grid.innerHTML =
+      tarjetas || '<p class="loading">No se pudieron cargar los perfiles</p>'
+  } catch (error) {
+    grid.innerHTML = '<p class="loading">Error al cargar desarrolladores</p>'
+    console.error(error)
+  }
 }
-// Ejecutar cuando cargue la página
+
 cargarDevs()
